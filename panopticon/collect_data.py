@@ -1,29 +1,26 @@
-import RPi.GPIO as GPIO
+import RPi.GPIO as gpio
 import itertools
 import time
 
 
-pin_pairs = ((17, 27), (22, 23))
-
-
 def setup_gpio_pins(trigs, echos):
-    GPIO.setup(trigs, GPIO.OUT);
-    GPIO.output(trigs, GPIO.LOW)
-    
-    GPIO.setup(echos, GPIO.IN)
+    gpio.setup(trigs, gpio.OUT);
+    gpio.output(trigs, gpio.HIGH)
+
+    gpio.setup(echos, gpio.IN)
 
 
 def read_distance(trig, echo):
-    GPIO.output(trig, True)
-    time.sleep(0.00001)
-    GPIO.output(trig, False)
+    gpio.output(trig, True)
+    time.sleep(0.000015)
+    gpio.output(trig, False)
 
-    while not GPIO.input(echo):
+    while not gpio.input(echo):
         pass
 
     echo_starting_time = time.time()
 
-    while GPIO.input(echo):
+    while gpio.input(echo):
         pass
 
     return min((time.time() - echo_starting_time) / 2 * 340, 4.5)
@@ -31,19 +28,16 @@ def read_distance(trig, echo):
 
 def collect_data():
     try:
-        GPIO.setmode(GPIO.BCM)
-
+        gpio.setmode(gpio.BCM)
+        pin_pairs = ((17, 27), (22, 23))
+        
         setup_gpio_pins(*zip(*pin_pairs))
-
         while True:
-            loop_starting_time = time.time()
-            
             yield itertools.starmap(read_distance, pin_pairs)
-            
-            time.sleep(max(0.2 - (time.time() - loop_starting_time), 0))
+            time.sleep(0.5)
 
     finally:
-        GPIO.cleanup()
+        gpio.cleanup()
 
 
 if __name__ == '__main__':
