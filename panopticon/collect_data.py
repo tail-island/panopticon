@@ -3,6 +3,18 @@ import itertools
 import time
 
 
+gpio.setmode(gpio.BCM)
+
+pin_pairs = (( 4, 14),
+             (15, 17),
+             (27, 22),
+             (23, 24),
+             (10,  9),
+             (25, 11),
+             ( 8,  7),
+             ( 5,  6))
+
+
 def setup_gpio_pins(trigs, echos):
     gpio.setup(trigs, gpio.OUT);
     gpio.output(trigs, gpio.HIGH)
@@ -28,12 +40,9 @@ def read_distance(trig, echo):
 
 def collect_data():
     try:
-        gpio.setmode(gpio.BCM)
-        pin_pairs = ((17, 27), (22, 23))
-        
         setup_gpio_pins(*zip(*pin_pairs))
         while True:
-            yield itertools.starmap(read_distance, pin_pairs)
+            yield tuple(itertools.starmap(read_distance, pin_pairs))
             time.sleep(0.5)
 
     finally:
