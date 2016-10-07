@@ -4,12 +4,13 @@ import tensorflow as tf
 def inference(inputs, is_training):
     # 1次元の畳込みは全く経験がないので、これでよいのかわかりません……。
 
-    outputs = tf.reshape(inputs, (-1, 8, 1, 8))  # 幅を1にして、1次元データをconvolution2dできるようにします。
-    outputs = tf.contrib.layers.convolution2d(outputs,  64, (4, 1))
-    outputs = tf.contrib.layers.convolution2d(outputs, 128, (4, 1))
-    outputs = tf.contrib.layers.max_pool2d(outputs, (2, 1))
+    l1 = tf.reshape(inputs, (-1, 8, 1, 8))  # 幅を1にして、1次元データをconvolution2dできるようにします。
+    
+    l2_1 = tf.contrib.layers.max_pool2d(tf.contrib.layers.convolution2d(l1, 64, (4, 1), 'VALID'), (5, 2))
+    l2_2 = tf.contrib.layers.max_pool2d(tf.contrib.layers.convolution2d(l1, 64, (3, 1), 'VALID'), (6, 2))
+    l2_3 = tf.contrib.layers.max_pool2d(tf.contrib.layers.convolution2d(l1, 64, (2, 1), 'VALID'), (7, 2))
 
-    outputs = tf.contrib.layers.flatten(outputs)
+    outputs = tf.contrib.layers.flatten(l2_1)
     outputs = tf.contrib.layers.fully_connected(outputs, 1024)
     outputs = tf.contrib.layers.fully_connected(outputs,  512)
 
