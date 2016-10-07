@@ -1,21 +1,17 @@
 import tensorflow as tf
+import panopticon.datasets as datasets
 
 
 def inference(inputs, is_training):
-    # 1次元の畳込みは全く経験がないので、これでよいのかわかりません……。
+    # http://tkengo.github.io/blog/2016/03/11/understanding-convolutional-neural-networks-for-nlp/で引用されている
+    # hang, Y., & Wallace, B. (2015). A Sensitivity Analysis of (and Practitioners' Guide to) Convolutional Neural Networks for Sentence Classificationを参照。
 
-    l1 = tf.reshape(inputs, (-1, 8, 1, 8))  # 幅を1にして、1次元データをconvolution2dできるようにします。
-    
-    l2_1 = tf.contrib.layers.max_pool2d(tf.contrib.layers.convolution2d(l1, 64, (4, 1), 'VALID'), (5, 2))
-    l2_2 = tf.contrib.layers.max_pool2d(tf.contrib.layers.convolution2d(l1, 64, (3, 1), 'VALID'), (6, 2))
-    l2_3 = tf.contrib.layers.max_pool2d(tf.contrib.layers.convolution2d(l1, 64, (2, 1), 'VALID'), (7, 2))
-
-    outputs = tf.contrib.layers.flatten(l2_1)
-    outputs = tf.contrib.layers.fully_connected(outputs, 1024)
-    outputs = tf.contrib.layers.fully_connected(outputs,  512)
-
+    outputs = tf.reshape(inputs, (-1, datasets.history_size, 1, datasets.channel_size))  # 幅を1にして、1次元データをconvolution2dできるようにします。
+    outputs_list = [tf.contrib.layers.max_pool2d(tf.contrib.layers.convolution2d(outputs, 128, (kernel_size, 1), padding='VALID'), (datasets.history_size - kernel_size + 1, 1)) for kernel_size in (5, 4, 3, 2)]
+    outputs = tf.concat(1, [tf.contrib.layers.flatten(outputs) for outputs in outputs_list])  # 次元0はバッチなので、次元1でconcatします。
+    outputs = tf.contrib.layers.stack(outputs, tf.contrib.layers.fully_connected, (1024, 512))
     outputs = tf.contrib.layers.dropout(outputs, is_training=is_training)
-    
+
     return tf.contrib.layers.linear(outputs, 2)
 
 

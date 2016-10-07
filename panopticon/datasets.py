@@ -3,12 +3,14 @@ import numpy
 from itertools import chain, count, islice, repeat, starmap, tee
 
 
+channel_size = 8
+history_size = 8
+
+
 data_files_sets = ((('./data/train/working.txt',),
                     ('./data/train/dancing.txt',)),
                    (('./data/test/working.txt',),
                     ('./data/test/dancing.txt',)))
-#                  (('./data/train/working.txt',),
-#                   ('./data/train/dancing.txt',)))
 
 
 class Dataset:
@@ -41,7 +43,7 @@ def load():
     def inputs_in_data_files(data_files):
         def inputs_in_data_file(data_file):
             poses = map(tuple, map(lambda s: map(float, s.split()), open(data_file)))
-            actions = zip(*starmap(lambda i, it: islice(it, i, None), enumerate(tee(poses, 8))))
+            actions = zip(*starmap(lambda i, it: islice(it, i, None), enumerate(tee(poses, history_size))))
             
             return map(tuple, starmap(chain, actions))
 
