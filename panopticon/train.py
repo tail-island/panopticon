@@ -39,7 +39,7 @@ def main():
 
             if global_step_value % 10 == 0:
                 saver.save(session, './checkpoints/model', global_step=global_step_value)
-                print('global step %4d: accuracy = %.04f.' % (global_step_value, session.run(accuracy, feed_dict={inputs: test_dataset.inputs, labels: test_dataset.labels, is_training: False})))
+                print('global step %5d: accuracy = %.04f.' % (global_step_value, session.run(accuracy, feed_dict={inputs: test_dataset.inputs, labels: test_dataset.labels, is_training: False})))
 
             inputs_value, labels_value = train_dataset.next_batch(10)
             _, summary_value = session.run((train, summary), feed_dict={inputs: inputs_value, labels: labels_value, is_training: True})

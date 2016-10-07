@@ -5,10 +5,10 @@ from itertools import chain, count, islice, repeat, starmap, tee
 
 data_files_sets = ((('./data/train/working.txt',),
                     ('./data/train/dancing.txt',)),
-                   (('./data/train/working.txt',),
-                    ('./data/train/dancing.txt',)))
-#                  (('./data/test/working.txt',),
-#                   ('./data/test/dancing.txt',)))
+                   (('./data/test/working.txt',),
+                    ('./data/test/dancing.txt',)))
+#                  (('./data/train/working.txt',),
+#                   ('./data/train/dancing.txt',)))
 
 
 class Dataset:
@@ -41,9 +41,9 @@ def load():
     def inputs_in_data_files(data_files):
         def inputs_in_data_file(data_file):
             poses = map(tuple, map(lambda s: map(float, s.split()), open(data_file)))
-            poses_set = zip(*starmap(lambda i, it: islice(it, i, None), enumerate(tee(poses, 8))))
+            actions = zip(*starmap(lambda i, it: islice(it, i, None), enumerate(tee(poses, 8))))
             
-            return map(tuple, starmap(chain, poses_set))
+            return map(tuple, starmap(chain, actions))
 
         return tuple(chain(*map(inputs_in_data_file, data_files)))
     

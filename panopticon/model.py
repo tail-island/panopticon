@@ -2,27 +2,20 @@ import tensorflow as tf
 
 
 def inference(inputs, is_training):
-    outputs = tf.reshape(inputs, (-1, 8, 8))
+    # 1次元の畳込みは全く経験がないので、これでよいのかわかりません……。
 
-    # 1次元の畳込みは、contrib.layersにありませんでした……。辛い。
-    # 1次元の畳込みは全く経験がないので、これでよいのかもわかりません……。
+    outputs = tf.reshape(inputs, (-1, 8, 1, 8))  # 幅を1にして、1次元データをconvolution2dできるようにします。
+    outputs = tf.contrib.layers.convolution2d(outputs,  64, (4, 1))
+    outputs = tf.contrib.layers.convolution2d(outputs, 128, (4, 1))
+    outputs = tf.contrib.layers.max_pool2d(outputs, (2, 1))
 
-    w1 = tf.Variable(tf.truncated_normal((4, 8, 64)))
-    b1 = tf.Variable(tf.constant(0.1, shape=(64,)))
-    outputs = tf.nn.relu(tf.add(tf.nn.conv1d(outputs, w1, 1, 'SAME'), b1))
-
-    w2 = tf.Variable(tf.truncated_normal((4, 64, 128)))
-    b2 = tf.Variable(tf.constant(0.1, shape=(128,)))
-    outputs = tf.nn.relu(tf.add(tf.nn.conv1d(outputs, w2, 1, 'SAME'), b2))
-
-    outputs = tf.reshape(outputs, (-1, 8 * 128))
-
+    outputs = tf.contrib.layers.flatten(outputs)
     outputs = tf.contrib.layers.fully_connected(outputs, 1024)
-    outputs = tf.contrib.layers.fully_connected(outputs, 512)
-    outputs = tf.contrib.layers.dropout(outputs, is_training=is_training)
-    outputs = tf.contrib.layers.linear(outputs, 3)
+    outputs = tf.contrib.layers.fully_connected(outputs,  512)
 
-    return outputs
+    outputs = tf.contrib.layers.dropout(outputs, is_training=is_training)
+    
+    return tf.contrib.layers.linear(outputs, 2)
 
 
 def loss(logits, labels):
