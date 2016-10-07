@@ -7,13 +7,13 @@ channel_size = 8
 history_size = 8
 
 
-data_files_sets = ((('./data/train/working.txt',),
-                    ('./data/train/dancing.txt',)),
-                   (('./data/test/working.txt',),
-                    ('./data/test/dancing.txt',)))
+data_files_lists = ((('./data/train/working.txt',),
+                     ('./data/train/dancing.txt',)),
+                    (('./data/test/working.txt',),
+                     ('./data/test/dancing.txt',)))
 
 
-class Dataset:
+class DataSet:
     def _shuffle(self):
         indice = numpy.arange(len(self.inputs))
         numpy.random.shuffle(indice)
@@ -21,9 +21,9 @@ class Dataset:
         self.inputs = self.inputs[indice]
         self.labels = self.labels[indice]
     
-    def __init__(self, inputs_set):
-        self.inputs = numpy.asarray(tuple(chain(*inputs_set)))
-        self.labels = numpy.asarray(tuple(chain(*starmap(lambda i, inputs: repeat(i, len(inputs)), enumerate(inputs_set)))))
+    def __init__(self, inputs_list):
+        self.inputs = numpy.asarray(tuple(chain(*inputs_list)))
+        self.labels = numpy.asarray(tuple(chain(*starmap(lambda i, inputs: repeat(i, len(inputs)), enumerate(inputs_list)))))
         self._batch_index = 0
 
         self._shuffle()
@@ -49,5 +49,5 @@ def load():
 
         return tuple(chain(*map(inputs_in_data_file, data_files)))
     
-    for data_files_set in data_files_sets:
-        yield Dataset(tuple(map(inputs_in_data_files, data_files_set)))
+    for data_files_list in data_files_lists:
+        yield DataSet(tuple(map(inputs_in_data_files, data_files_list)))

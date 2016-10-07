@@ -1,7 +1,7 @@
 import os
-import panopticon.model as model
-import panopticon.datasets as datasets
-import tensorflow as tf
+import panopticon.model     as model
+import panopticon.data_sets as data_sets
+import tensorflow           as tf
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
     summary = tf.merge_all_summaries()
     saver = tf.train.Saver()
 
-    train_dataset, test_dataset = datasets.load()
+    train_data_set, test_data_set = data_sets.load()
 
     if not os.path.exists('./checkpoints'):
         os.mkdir('checkpoints')
@@ -39,9 +39,9 @@ def main():
 
             if global_step_value % 10 == 0:
                 saver.save(session, './checkpoints/model', global_step=global_step_value)
-                print('global step %5d: accuracy = %.04f.' % (global_step_value, session.run(accuracy, feed_dict={inputs: test_dataset.inputs, labels: test_dataset.labels, is_training: False})))
+                print('global step %5d: accuracy = %.04f.' % (global_step_value, session.run(accuracy, feed_dict={inputs: test_data_set.inputs, labels: test_data_set.labels, is_training: False})))
 
-            inputs_value, labels_value = train_dataset.next_batch(10)
+            inputs_value, labels_value = train_data_set.next_batch(10)
             _, summary_value = session.run((train, summary), feed_dict={inputs: inputs_value, labels: labels_value, is_training: True})
 
             summary_writer.add_summary(summary_value, global_step_value)
