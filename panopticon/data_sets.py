@@ -1,16 +1,16 @@
 import numpy
 
-from itertools import chain, count, islice, repeat, starmap, tee
+from itertools import chain, islice, repeat, starmap, tee
 
 
-channel_size = 8
-history_size = 8
+channel_size = 10
+history_size = 25
 
 
-data_files_lists = ((('./data/train/working.txt',),
-                     ('./data/train/dancing.txt',)),
-                    (('./data/test/working.txt',),
-                     ('./data/test/dancing.txt',)))
+data_files_lists = ((('./data/ike-0.txt', './data/kob-0.txt', './data/nak-0.txt'),
+                     ('./data/ike-1.txt', './data/kob-1.txt', './data/nak-1.txt')),
+                    (('./data/kur-0.txt',),
+                     ('./data/kur-1.txt',)))
 
 
 class DataSet:
@@ -20,7 +20,7 @@ class DataSet:
 
         self.inputs = self.inputs[indice]
         self.labels = self.labels[indice]
-    
+
     def __init__(self, inputs_list):
         self.inputs = numpy.asarray(tuple(chain(*inputs_list)))
         self.labels = numpy.asarray(tuple(chain(*starmap(lambda i, inputs: repeat(i, len(inputs)), enumerate(inputs_list)))))
@@ -44,10 +44,10 @@ def load():
         def inputs_in_data_file(data_file):
             poses = map(tuple, map(lambda s: map(float, s.split()), open(data_file)))
             actions = zip(*starmap(lambda i, it: islice(it, i, None), enumerate(tee(poses, history_size))))
-            
+
             return map(tuple, starmap(chain, actions))
 
         return tuple(chain(*map(inputs_in_data_file, data_files)))
-    
+
     for data_files_list in data_files_lists:
         yield DataSet(tuple(map(inputs_in_data_files, data_files_list)))

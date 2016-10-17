@@ -5,7 +5,7 @@ import tensorflow           as tf
 
 
 def main():
-    inputs = tf.placeholder(tf.float32, (None, 8 * 8))
+    inputs = tf.placeholder(tf.float32, (None, data_sets.history_size * data_sets.channel_size))
     labels = tf.placeholder(tf.int32, (None))
     is_training = tf.placeholder(tf.bool)
 
@@ -41,7 +41,7 @@ def main():
                 saver.save(session, './checkpoints/model', global_step=global_step_value)
                 print('global step %5d: accuracy = %.04f.' % (global_step_value, session.run(accuracy, feed_dict={inputs: test_data_set.inputs, labels: test_data_set.labels, is_training: False})))
 
-            inputs_value, labels_value = train_data_set.next_batch(10)
+            inputs_value, labels_value = train_data_set.next_batch(100)
             _, summary_value = session.run((train, summary), feed_dict={inputs: inputs_value, labels: labels_value, is_training: True})
 
             summary_writer.add_summary(summary_value, global_step_value)

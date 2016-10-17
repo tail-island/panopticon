@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
         pwm.start(0)
         for dc in [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]:
-            pwm.ChangeDucyCycle(dc)
+            pwm.ChangeDutyCycle(dc)
             time.sleep(1)
         pwm.stop()
 

@@ -12,7 +12,9 @@ pin_pairs = (( 4, 14),
              (10,  9),
              (25, 11),
              ( 8,  7),
-             ( 5,  6))
+             ( 5,  6),
+             (12, 13),
+             (19, 16))
 
 
 def setup_gpio_pins(trigs, echos):
@@ -43,7 +45,7 @@ def collect_data():
         setup_gpio_pins(*zip(*pin_pairs))
         while True:
             yield tuple(itertools.starmap(read_distance, pin_pairs))
-            time.sleep(0.5)
+            time.sleep(0.2)
 
     finally:
         gpio.cleanup()
@@ -52,5 +54,5 @@ def collect_data():
 if __name__ == '__main__':
     for data in collect_data():
         for x in data:
-            print(x, end='\t')
+            print('%.2' % x, end='\t')
         print()
