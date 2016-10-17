@@ -6,11 +6,25 @@ from itertools import chain, islice, repeat, starmap, tee
 channel_size = 10
 history_size = 25
 
+# data_files_lists = ((('./data/kob-0.txt', './data/kur-0.txt', './data/nak-0.txt'),
+#                      ('./data/kob-1.txt', './data/kur-1.txt', './data/nak-1.txt')),
+#                     (('./data/ike-0.txt',),
+#                      ('./data/ike-1.txt',)))
 
-data_files_lists = ((('./data/ike-0.txt', './data/kob-0.txt', './data/nak-0.txt'),
-                     ('./data/ike-1.txt', './data/kob-1.txt', './data/nak-1.txt')),
-                    (('./data/kur-0.txt',),
-                     ('./data/kur-1.txt',)))
+# data_files_lists = ((('./data/ike-0.txt', './data/kur-0.txt', './data/nak-0.txt'),
+#                      ('./data/ike-1.txt', './data/kur-1.txt', './data/nak-1.txt')),
+#                     (('./data/kob-0.txt',),
+#                      ('./data/kob-1.txt',)))
+
+# data_files_lists = ((('./data/ike-0.txt', './data/kob-0.txt', './data/nak-0.txt'),
+#                      ('./data/ike-1.txt', './data/kob-1.txt', './data/nak-1.txt')),
+#                     (('./data/kur-0.txt',),
+#                      ('./data/kur-1.txt',)))
+
+data_files_lists = ((('./data/ike-0.txt', './data/kob-0.txt', './data/kur-0.txt'),
+                     ('./data/ike-1.txt', './data/kob-1.txt', './data/kur-1.txt')),
+                    (('./data/nak-0.txt',),
+                     ('./data/nak-1.txt',)))
 
 
 class DataSet:
