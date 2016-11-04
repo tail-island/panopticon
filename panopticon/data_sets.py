@@ -53,14 +53,15 @@ class DataSet:
         return self.inputs[start:end], self.labels[start:end]
 
 
+def actions(poses):
+    return map(tuple, starmap(chain, zip(*starmap(lambda i, it: islice(it, i, None), enumerate(tee(poses, history_size))))))
+    
+
 def load():
     def inputs_in_data_files(data_files):
         def inputs_in_data_file(data_file):
-            poses = map(tuple, map(lambda s: map(float, s.split()), open(data_file)))
-            actions = zip(*starmap(lambda i, it: islice(it, i, None), enumerate(tee(poses, history_size))))
-
-            return map(tuple, starmap(chain, actions))
-
+            return actions(map(tuple, map(lambda s: map(float, s.split()), open(data_file))))
+        
         return tuple(chain(*map(inputs_in_data_file, data_files)))
 
     for data_files_list in data_files_lists:

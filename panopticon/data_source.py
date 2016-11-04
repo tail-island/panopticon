@@ -1,6 +1,7 @@
 import RPi.GPIO as gpio
-import itertools
-import time
+
+from itertools import startmap
+from time import time, sleep
 
 
 gpio.setmode(gpio.BCM)
@@ -26,33 +27,34 @@ def setup_gpio_pins(trigs, echos):
 
 def read_distance(trig, echo):
     gpio.output(trig, True)
-    time.sleep(0.000015)
+    sleep(0.000015)
     gpio.output(trig, False)
 
     while not gpio.input(echo):
         pass
 
-    echo_starting_time = time.time()
+    echo_starting_time = time()
 
     while gpio.input(echo):
         pass
 
-    return min((time.time() - echo_starting_time) / 2 * 340, 4.5)
+    return min((time() - echo_starting_time) / 2 * 340, 4.5)
 
 
-def collect_data():
+def read_poses():
     try:
         setup_gpio_pins(*zip(*pin_pairs))
+        
         while True:
-            yield tuple(itertools.starmap(read_distance, pin_pairs))
-            time.sleep(0.2)
+            yield tuple(starmap(read_distance, pin_pairs))
+            sleep(0.2)
 
     finally:
         gpio.cleanup()
 
 
 if __name__ == '__main__':
-    for data in collect_data():
-        for x in data:
-            print('%.2' % x, end='\t')
+    for pose in read_poses():
+        for distance in pose:
+            print('%.2' % distance, end='\t')
         print()
